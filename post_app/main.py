@@ -49,9 +49,9 @@ def post_message(req: Request, body: MessageCreate, db: Session = Depends(get_db
     token = authorization.split(' ')[1]
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-    except jwt.ExpiredSignatureError:
+    except jwt.ExpiredSignatureError:  # проверка на истекший токен
         raise HTTPException(status_code=401)
-    except jwt.InvalidTokenError:
+    except jwt.InvalidTokenError:  # проверка на валидность токена
         raise HTTPException(status_code=400)
     user_id = payload.get('user_id')
     if not user_id:
