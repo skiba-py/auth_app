@@ -1,0 +1,43 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: app_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  auth:
+    build:
+      context: ./auth_app
+    environment:
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_HOST: db
+      DB_NAME: app_db
+      JWT_SECRET: supersecret
+      JWT_ALGORITHM: HS256
+      JWT_EXP_DELTA_SECONDS: '3600'
+    ports:
+      - '8000:8000'
+    depends_on:
+      - db
+
+  post:
+    build:
+      context: ./post_app
+    environment:
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_HOST: db
+      DB_NAME: app_db
+      JWT_SECRET: supersecret
+      JWT_ALGORITHM: HS256
+    ports:
+      - '8001:8000'
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
